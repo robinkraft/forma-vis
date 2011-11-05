@@ -10,32 +10,32 @@ function filter(image_data, w, h, threshold) {
 		//image_data[pixel_pos+3] = 0;
 		continue;
 	    }
-	    if (image_data[pixel_pos] == 0){
-	    	//image_data[pixel_pos] 		= 255;
-	    	image_data[pixel_pos + 1]	= 255;
-	    	image_data[pixel_pos + 2]	= 0;
+	    if (image_data[pixel_pos+2] == 0){
+	    	image_data[pixel_pos] 		= 0;
+	    	image_data[pixel_pos + 1]	= 100;
+	    	//image_data[pixel_pos + 2]	= 20;
 	    	image_data[pixel_pos + 3]	= 255;
 	    	continue;
 	    }
-	    if (image_data[pixel_pos] == 1){
-	    	//image_data[pixel_pos] 		= 0;
-	    	image_data[pixel_pos + 1]	= 255;
-	    	image_data[pixel_pos + 2]	= 0;
+	    if (image_data[pixel_pos+2] == 1){
+	    	image_data[pixel_pos] 		= 0;
+	    	image_data[pixel_pos + 1]	= 100;
+	    	//image_data[pixel_pos + 2]	= 20;
 	    	image_data[pixel_pos + 3]	= 255;
 	    	continue
 	    }
-	    if(image_data[pixel_pos] < threshold ) 
+	    if(image_data[pixel_pos+2] < threshold ) 
 	    {
-	    	//image_data[pixel_pos] 		= 255;
+	    	image_data[pixel_pos] 		= 255;
 	    	image_data[pixel_pos + 1]	= 0;
-	    	image_data[pixel_pos + 2]	= 255;
+	    	//image_data[pixel_pos + 2]	= 255;
 	    	image_data[pixel_pos + 3]	= 255;
 		
 	    }else{
 	    	// COLOR IT GREEN
-	    	//image_data[pixel_pos] 		= 0;
-	    	image_data[pixel_pos + 1]	= 255;
-	    	image_data[pixel_pos + 2]	= 0;
+	    	image_data[pixel_pos] 		= 0;
+	    	image_data[pixel_pos + 1]	= 100;
+	    	//image_data[pixel_pos + 2]	= 20;
 	    	image_data[pixel_pos + 3]	= 255;
 	    }
         }
@@ -62,7 +62,7 @@ CanvasTileLayer.prototype.canvas_setup = function(canvas, coord, zoom){
 // WORKING:
 	var bound = Math.pow(2, zoom);
 	var yVal = (bound - coord.y - 1);
-    image.src = "http://localhost/ecohack/" + zoom + "/"+ coord.x + "/" + yVal +".png";
+    image.src = "http://97.107.130.4/ecohack/" + zoom + "/"+ coord.x + "/" + yVal +".png";
 
 // ORIGINAL
 //    image.src = "http://localhost:8080/proxy/mountainbiodiversity.org/env/z" + zoom + "/"+ coord.x + "/" + coord.y +".png";
