@@ -2,32 +2,42 @@
 function filter(image_data, w, h, threshold) {
     var components = 4; //rgba
     var pixel_pos;
+    console.log(threshold);
     for(var i=0; i < w; ++i) {
         for(var j=0; j < h; ++j) {
             pixel_pos = (j*w + i) * components;
-			if(image_data[pixel_pos] < threshold ) 
-			{
-				// Its beneath the threshold, so zero out all the values
-				// image_data[pixel_pos] 		= 0;
-				// image_data[pixel_pos + 1]	= 0; 
-				// image_data[pixel_pos + 2]	= 0;
-				// image_data[pixel_pos + 3]	= 0;
-				
-				// UNDER THE THRESHOLD - DEFORESTED ==> RED
-				image_data[pixel_pos] 		= maxR;
-				image_data[pixel_pos + 1]	= minG;
-				// image_data[pixel_pos] 		= maxR - (pixelRValue-threshold)/255.0 * (maxR-minR);
-				// image_data[pixel_pos + 1]	= minG + (pixelRValue-threshold)/255.0 * (maxG-minG);
-				image_data[pixel_pos + 2]	= 0;
-				image_data[pixel_pos + 3]	= 255;
-				
-			}else{
-				// COLOR IT GREEN
-				image_data[pixel_pos] 		= 56;
-				image_data[pixel_pos + 1]	= 112;
-				image_data[pixel_pos + 2]	= 38;
-				image_data[pixel_pos + 3]	= 255;
-			}
+	    if (image_data[pixel_pos+3] == 0){
+		//image_data[pixel_pos+3] = 0;
+		continue;
+	    }
+	    if (image_data[pixel_pos] == 0){
+	    	//image_data[pixel_pos] 		= 255;
+	    	image_data[pixel_pos + 1]	= 255;
+	    	image_data[pixel_pos + 2]	= 0;
+	    	image_data[pixel_pos + 3]	= 255;
+	    	continue;
+	    }
+	    if (image_data[pixel_pos] == 1){
+	    	//image_data[pixel_pos] 		= 0;
+	    	image_data[pixel_pos + 1]	= 255;
+	    	image_data[pixel_pos + 2]	= 0;
+	    	image_data[pixel_pos + 3]	= 255;
+	    	continue
+	    }
+	    if(image_data[pixel_pos] < threshold ) 
+	    {
+	    	//image_data[pixel_pos] 		= 255;
+	    	image_data[pixel_pos + 1]	= 0;
+	    	image_data[pixel_pos + 2]	= 255;
+	    	image_data[pixel_pos + 3]	= 255;
+		
+	    }else{
+	    	// COLOR IT GREEN
+	    	//image_data[pixel_pos] 		= 0;
+	    	image_data[pixel_pos + 1]	= 255;
+	    	image_data[pixel_pos + 2]	= 0;
+	    	image_data[pixel_pos + 3]	= 255;
+	    }
         }
     }
 };
@@ -52,7 +62,7 @@ CanvasTileLayer.prototype.canvas_setup = function(canvas, coord, zoom){
 // WORKING:
 	var bound = Math.pow(2, zoom);
 	var yVal = (bound - coord.y - 1);
-    image.src = "http://localhost:8080/proxy/97.107.130.4/ecohack/" + zoom + "/"+ coord.x + "/" + yVal +".png";
+    image.src = "http://localhost/ecohack/" + zoom + "/"+ coord.x + "/" + yVal +".png";
 
 // ORIGINAL
 //    image.src = "http://localhost:8080/proxy/mountainbiodiversity.org/env/z" + zoom + "/"+ coord.x + "/" + coord.y +".png";
@@ -106,11 +116,11 @@ CanvasTileLayer.prototype.filter_tiles = function(threshold) {
 };
 
 CanvasTileLayer.prototype.filter_tile = function(canvas_obj) {
-    if (this.last_threshold > this.threshold) 
-        canvas_obj.ctx.drawImage(canvas_obj.canvas.image, 0, 0); 
+    // if (this.last_threshold > this.threshold) 
+    //     canvas_obj.ctx.drawImage(canvas_obj.canvas.image, 0, 0); 
     canvas_obj.image_data = canvas_obj.ctx.getImageData(0, 0, canvas_obj.ctx.width, canvas_obj.ctx.height);
 
-    filter(canvas_obj.image_data.data, canvas_obj.ctx.width, canvas_obj.ctx.height, 255.0 * this.threshold / 100.0);
+    filter(canvas_obj.image_data.data, canvas_obj.ctx.width, canvas_obj.ctx.height, this.threshold);
     canvas_obj.ctx.putImageData(canvas_obj.image_data,0,0);						
 
 

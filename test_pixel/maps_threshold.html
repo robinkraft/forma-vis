@@ -105,12 +105,12 @@
                    var that = this;
                    $("#slider").slider({
                        slide: function(event, ui) {  
-                           // $("#slider_value").html(8000*ui.value/100.0 + " meters");
-
-							var adjustedVal = (100 - ui.value);
+	   var my_slider_val = (ui.value / 100.0) * 68.0 + 1;
+	   //console.log(my_slider_val);
+           // $("#slider_value").html(8000*ui.value/100.0 + " meters");
 							$("#slider_value").html( formatDate( getDateForPercent(ui.value)) );
 
-                           that.heightLayer.filter_tiles(ui.value);
+                           that.heightLayer.filter_tiles(my_slider_val);
                        }
                    });
                };							
