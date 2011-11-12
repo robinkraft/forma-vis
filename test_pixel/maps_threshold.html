@@ -9,13 +9,19 @@
             height: 100%;
         }
         #wrap {
-            width: 100%;
+            width: 80%%;
             height: 100%;
             margin: 0 auto;
         }
-        #slider { margin: 10px; }
+		#slider_controls { 
+			width: 80%; 
+            margin: 0 auto;
+		}
+        #slider { 
+			margin: 10px; 
+		}
         #map {
-            width: 800px;
+            width: 100%;
             height: 500px;
         }
         #map_wrapper {
@@ -28,18 +34,25 @@
         </style>
     </head>
     <body style="background: #FFF;">
- 
-       <div id="wrap">
-       	<p>Move the slider to filter area above certain meters</p>
-
-		<div>
-			<div id="startDateLabel" style="float:left"></div>
-			<div id="endDateLabel" style="float:right"></div>
-		</div>
-		<div style="clear:both" > </div>
+	<div id="wrap">
+		<div id="header">
+			<h1>Deforestation in Indonesia</h1>
+			<p>Time-based visualization of deforestation, detected by satellite imaging, from Jan 2006, thru August 2011.</p>
+			<div id="slider_controls">
+		       	<p>Move the slider to show deforestation (marked as red) at certain dates.</p>
+				<div>
+					<div id="startDateLabel" style="float:left"></div>
+					<div id="endDateLabel" style="float:right"></div>
+				</div>
+				<div style="clear:both" > </div>
 		
-       	<div id="slider"></div>
-       	<div id="slider_value">0 meters</div>
+		       	<div id="slider"></div>
+		       	<div id="slider_value"></div>
+			</div>
+		</div>
+
+
+
        	<!--<div id="current_canvas">0</div>-->
        	<div id="map_wrapper">
         <div id="map"></div>
@@ -70,7 +83,7 @@
 
 				function getDateForPercent(percentage){
 					var diffBtwDates = endDate.getTime() - startDate.getTime();
-					console.log('perceht is : ' + percentage + ", diff between dates: " + endDate.getTime() );
+					// console.log('percent is : ' + percentage + ", diff between dates: " + endDate.getTime() );
 					var newDate = new Date(startDate.getTime() + diffBtwDates*percentage / 100.0);
 					return newDate;
 				}
@@ -124,4 +137,3 @@
        </script>
   </body>
 </html>
-
