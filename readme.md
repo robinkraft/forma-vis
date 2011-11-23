@@ -1,7 +1,8 @@
 forma-vis
 ===================
+<a href="http://forma-vis.s3-website-us-east-1.amazonaws.com/">Demo here</a>
 
-This project shows the spread of deforestation in Indonesia over the last few years, as detected by [FORMA](http://www.cgdev.org/forma). Use the slider to change the time period. It currently shows monthly data from January 2006 to August 2008. FORMA uses MODIS satellite imagery to detect forest clearing across the tropics. More data will be available soon.
+This project shows the spread of deforestation in Indonesia over the last few years, as detected by [FORMA](http://www.cgdev.org/forma). Use the slider on the <a href="http://forma-vis.s3-website-us-east-1.amazonaws.com/">website</a> to change the time period. It currently shows monthly data from January 2006 to August 2008. FORMA uses MODIS satellite imagery to detect forest clearing across the tropics. More data will be available soon.
 
 This all came together thanks to the efforts of <a href="https://github.com/brianhonohan">Brian Honohan</a>, <a href="https://github.com/hhuuggoo">Hugo Shi</a>, <a href="https://github.com/smathermather">Stephen Mather</a>, and <a href="https://github.com/charleshuang80">Charles Huang</a> at <a href="http://www.EcoHackNYC.org">EcoHackNYC</a>.
 
