@@ -1,158 +1,102 @@
-// Tile layer container
-function filter(image_data, w, h, threshold) {
-    var components = 4; //rgba
-    var pixel_pos;
-    console.log(threshold);
-    for(var i=0; i < w; ++i) {
-        for(var j=0; j < h; ++j) {
-            pixel_pos = (j*w + i) * components;
-	    if (image_data[pixel_pos+3] == 0){
-		//image_data[pixel_pos+3] = 0;
-		continue;
-	    }
-	    if (image_data[pixel_pos+2] == 0){
-	    	image_data[pixel_pos] 		= 0;
-	    	image_data[pixel_pos + 1]	= 100;
-	    	//image_data[pixel_pos + 2]	= 20;
-	    	image_data[pixel_pos + 3]	= 255;
-	    	continue;
-	    }
-	    if (image_data[pixel_pos+2] == 1){
-	    	image_data[pixel_pos] 		= 0;
-	    	image_data[pixel_pos + 1]	= 100;
-	    	//image_data[pixel_pos + 2]	= 20;
-	    	image_data[pixel_pos + 3]	= 255;
-	    	continue
-	    }
-	    if(image_data[pixel_pos+2] < threshold ) 
-	    {
-	    	image_data[pixel_pos] 		= 255;
-	    	image_data[pixel_pos + 1]	= 0;
-	    	//image_data[pixel_pos + 2]	= 255;
-	    	image_data[pixel_pos + 3]	= 255;
-		
-	    }else{
-	    	// COLOR IT GREEN
-	    	image_data[pixel_pos] 		= 0;
-	    	image_data[pixel_pos + 1]	= 100;
-	    	//image_data[pixel_pos + 2]	= 20;
-	    	image_data[pixel_pos + 3]	= 255;
-	    }
-        }
-    }
-};
 
-
-function CanvasTileLayer() {
-    this.threshold = null;
-    this.last_threshold = null;
+function CanvasTileLayer(canvasSetupCallback, filter, tileOptions) {
+    this.tileOptions = tileOptions;
     this.tileSize = new google.maps.Size(256,256);
     this.maxZoom = 19;
     this.name = "Tile #s";
     this.alt = "Canvas tile layer";
     this.tiles = {};
+    this.canvasSetupCallback = canvasSetupCallback;
+    this.filter = filter;
 }
 
-// move this to the canvas_tile_layer side
-CanvasTileLayer.prototype.canvas_setup = function(canvas, coord, zoom){
-    var that = this;
+
+CanvasTileLayer.prototype.setupCanvas = function (canvas, coord, zoom) {
     var image = new Image();  
-//    var ctx = canvas.getContext('2d');
-
-// WORKING:
-	var bound = Math.pow(2, zoom);
-	var yVal = (bound - coord.y - 1);
-    image.src = "http://97.107.130.4/ecohack/" + zoom + "/"+ coord.x + "/" + yVal +".png";
-
-// ORIGINAL
-//    image.src = "http://localhost:8080/proxy/mountainbiodiversity.org/env/z" + zoom + "/"+ coord.x + "/" + coord.y +".png";
-
-// BROKEN: 
-//    image.src = "http://localhost:8080/proxy/97.107.130.4/ecohack/" + zoom + "/"+ coord.x + "/" + coord.y +".png";
-
-    canvas.canvas.image = image;
+    var ctx = canvas.getContext('2d');
+    var yVal = coord.y;
+    if(this.tileOptions.adjustForGoogleMapsV3){
+        bound = Math.pow(2, zoom);
+        yVal = (bound - coord.y - 1);
+    }
+    image.src = this.tileOptions.baseUrl + zoom + "/"+ coord.x + "/" + yVal +".png";
+    
+    canvas.image = image;
     $(image).load(function() { 
-        canvas.ctx.drawImage(image, 0, 0);  
-        that.filter_tile(canvas, that.threshold);
-    });								
-};
+        //ctx.globalAlpha = 0.5;
+        ctx.drawImage(image, 0, 0);  
+        App.heightLayer.filter_tile(canvas, [App.threshold, App.prevThreshold]);
+    });
+
+    if(this.canvasSetupCallback) {
+        this.canvasSetupCallback(canvas, coord, zoom);
+    }
+}
 
 // create a tile with a canvas element
 CanvasTileLayer.prototype.create_tile_canvas = function(coord, zoom, ownerDocument) {
+      
+      // create canvas and reset style
+      var canvas = ownerDocument.createElement('canvas');
+      canvas.style.border = "none";
+      canvas.style.margin= "0";
+      canvas.style.padding = "0";
 
-    // create canvas and reset style
-    var canvas = ownerDocument.createElement('canvas');
-    canvas.style.border  = "none";
-    canvas.style.margin  = "0";
-    canvas.style.padding = "0";
-
-    // prepare canvas and context sizes
-    var ctx    = canvas.getContext('2d');
-    ctx.width  = canvas.width = this.tileSize.width;
-    ctx.height = canvas.height = this.tileSize.height;
-
-    //set unique id 
-    var tile_id = coord.x + '_' + coord.y + '_' + zoom;  
-    canvas.setAttribute('id', tile_id);
-
-    if (tile_id in this.tiles) 
+      // prepare canvas and context sizes
+      var ctx = canvas.getContext('2d');
+      ctx.width = canvas.width = this.tileSize.width;
+      ctx.height = canvas.height = this.tileSize.height;
+    
+      //set unique id 
+      var tile_id = coord.x + '_' + coord.y + '_' + zoom;
+      canvas.setAttribute('id', tile_id);
+      if(tile_id in this.tiles) {
         delete this.tiles[tile_id];
+      }
+      this.tiles[tile_id] = canvas;
 
-    this.tiles[tile_id] = {canvas: canvas, ctx: ctx, image_data:ctx.getImageData(0, 0, canvas.width, canvas.height)};
+      this.setupCanvas(canvas, coord, zoom);
 
-    // custom setup
-    if (this.canvas_setup) 
-        this.canvas_setup(this.tiles[tile_id], coord, zoom);
+      return canvas;
 
+}
+
+CanvasTileLayer.prototype.filter_tile = function(canvas, args) {
+    var ctx = canvas.getContext('2d');
+    ctx.drawImage(canvas.image, 0, 0);  
+    var I = ctx.getImageData(0, 0, canvas.width, canvas.height);
+    this.filter.apply(this, [I.data, ctx.width, ctx.height].concat(args));
+    ctx.putImageData(I,0,0);
+}
+
+// render visible tiles on a canvas, return a canvas object
+// map: map where tiles are rendering
+CanvasTileLayer.prototype.composed = function(map, w, h) {
+    var canvas = document.createElement('canvas');
+    var ctx = canvas.getContext('2d');
+    ctx.width = canvas.width = w || $(map).width();
+    ctx.height = canvas.height = h || $(map).height();
+    for(var i in this.tiles) {
+        var t = this.tiles[i];
+        var mpos = $(map).offset();
+        var pos = $(t).offset();
+        ctx.drawImage(t, pos.left - mpos.left, pos.top - mpos.top);
+    }
     return canvas;
 }
 
-CanvasTileLayer.prototype.filter_tiles = function(threshold) {
-    this.threshold = threshold;
-      for(var c in this.tiles) {
-          this.filter_tile(this.tiles[c]);
-      }								
-    this.last_threshold = threshold;	
-};
-
-CanvasTileLayer.prototype.filter_tile = function(canvas_obj) {
-    // if (this.last_threshold > this.threshold) 
-    //     canvas_obj.ctx.drawImage(canvas_obj.canvas.image, 0, 0); 
-    canvas_obj.image_data = canvas_obj.ctx.getImageData(0, 0, canvas_obj.ctx.width, canvas_obj.ctx.height);
-
-    filter(canvas_obj.image_data.data, canvas_obj.ctx.width, canvas_obj.ctx.height, this.threshold);
-    canvas_obj.ctx.putImageData(canvas_obj.image_data,0,0);						
-
-
-    //   var filterWorker = new Worker('filter_worker.js');
-    // filterWorker.onmessage = function( event ){
-    //   console.log(event);
-    //     // var live_canvas = that.tiles[event.data.c]
-    //     // var live_ctx = canvas.getContext('2d');
-    //     // live_ctx.putImageData(event.data.image,0,0);
-    //   }; 
-    // 
-    //   var image_data     = ctx.getImageData(0, 0, canvas.width, canvas.height).data;  
-    //   var filter_options = {
-    //     image_data: image_data,
-    //     width: ctx.width,
-    //     height: ctx.height,
-    //     threshold: 255.0 * this.threshold / 100.0,
-    //     c: c
-    //   };
-    // 
-    //   //
-    //   filterWorker.postMessage(filter_options);
-    //   
-    //   //filter(I.data, ctx.width, ctx.height, 255.0 * this.threshold / 100.0);  
-    //   //ctx.putImageData(I,0,0);                   
-
-
-};														
-
-// could be called directly...
+CanvasTileLayer.prototype.filter_tiles = function() {
+    var args = [];
+    for (var i in arguments) {
+        args.push(arguments[i]);
+    }
+    for(var c in this.tiles) {
+        this.filter_tile(this.tiles[c], args);
+    }
+}
 CanvasTileLayer.prototype.getTile = function(coord, zoom, ownerDocument) {
-    return this.create_tile_canvas(coord, zoom, ownerDocument);
+  // could be called directly...
+  return this.create_tile_canvas(coord, zoom, ownerDocument);
 };
 
 CanvasTileLayer.prototype.releaseTile = function(tile) {
