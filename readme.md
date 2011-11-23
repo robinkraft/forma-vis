@@ -1,31 +1,10 @@
-
-Visual raster tests
+forma-vis
 ===================
 
-This repo contains some examples of per pixel image processing using HTML5 canvas element and some javascript code. There are 3 examples:
+This project shows the spread of deforestation in Indonesia over the last few years, as detected by [FORMA](http://www.cgdev.org/forma). Use the slider to change the time period. It currently shows monthly data from January 2006 to August 2008. More coming soon!
 
- - flood_fill.html: shows how to use [flood fill](http://en.wikipedia.org/wiki/Flood_fill) technique.
- - contour_tracing.html: search contour for shapes with the same color. Clicking on the image the contour of the selected color is highlight.
- - threshold.html: filter image based on a threshold changed by user. In this example an altitude map is shown and can be filtered using a slider.
+This project came together thanks to the efforts of Brian Honohan, Hugo Shi, Stephen Mather, and Charles Huang at <a href="http://www.EcoHackNYC.org">EcoHackNYC</a>. Thanks guys for working on this with me!
 
+On the technical side, this project depends heavily on <a href="http://www.vizzuality.com">Vizzuality's</a> awesome <a href="https://github.com/Vizzuality/visualraster">VisualRaster</a> demo, which uses the HTML5 canvas element and a bit of javascript to do pixel-level manipulations. 
 
-In order to run examples you should put files in a public folder of your http server. This is because security issues with cross domain images using canvas element:
-
-``` bash
-$ git clone git://github.com/Vizzuality/visualraster.git
-$ cd test_pixel
-$ python -m SimpleHTTPServer
-$ open http://localhost:8000 (on osx)
-```
-
-If you want to run the maps_threshold example locally, you will need to
-run a small proxy server to bypass the CANVAS tag cross domain policy in order to manipulate remote tiles.
-
-Install node.js and run the proxy.js like so:
-
-``` bash
-$ git clone git://github.com/Vizzuality/visualraster.git
-$ cd test_pixel
-$ node proxy.js
-$ open http://localhost:8080/maps_threshold.html (on osx)
-```
+Because of the dreaded <a href="http://dira.ro/2011/10/17/heroku-s3-canvas-and-the-security-error-of-doom">cross-domain canvas security restrictions</a>, you can <a href="forma-vis.s3-website-us-east-1.amazonaws.com">view the deforestation demo</a> on S3.
