@@ -7,4 +7,4 @@ This project came together thanks to the efforts of Brian Honohan, Hugo Shi, Ste
 
 On the technical side, this project depends heavily on <a href="http://www.vizzuality.com">Vizzuality's</a> awesome <a href="https://github.com/Vizzuality/visualraster">VisualRaster</a> demo, which uses the HTML5 canvas element and a bit of javascript to do pixel-level manipulations. 
 
-Because of the dreaded <a href="http://dira.ro/2011/10/17/heroku-s3-canvas-and-the-security-error-of-doom">cross-domain canvas security restrictions</a>, you can <a href="forma-vis.s3-website-us-east-1.amazonaws.com">view the deforestation demo</a> on S3.
+Because of the dreaded <a href="http://dira.ro/2011/10/17/heroku-s3-canvas-and-the-security-error-of-doom">cross-domain canvas security restrictions</a>, you can <a href="http://forma-vis.s3-website-us-east-1.amazonaws.com">view the deforestation demo</a> on S3.
